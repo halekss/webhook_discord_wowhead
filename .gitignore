@@ -1,0 +1,5 @@
+.venv
+.env
+__pycache__
+last_content_*.txt
+!requirements.txt
