@@ -23,7 +23,7 @@ jobs:
       - name: Run script
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        run: python main.py
+        run: python scrapwowhead.py
       - name: Commit and push changes
         run: |
           git config --global user.name 'GitHub Action'
