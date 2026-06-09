@@ -6,8 +6,8 @@ on:
   workflow_dispatch: # Permet de le lancer manuellement quand tu veux
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
   scrape:
     runs-on: ubuntu-latest
