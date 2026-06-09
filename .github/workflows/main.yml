@@ -1,0 +1,33 @@
+name: WoW Delves Monitor
+
+on:
+  schedule:
+    - cron: '30 11 * * *' # Tourne tous les jours à 10h
+  workflow_dispatch: # Permet de le lancer manuellement quand tu veux
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Important pour pouvoir push les fichiers .txt
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install playwright requests python-dotenv
+          playwright install chromium
+      - name: Run script
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: python main.py
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add last_content_*.txt
+          git commit -m "Mise à jour automatique des builds Delves" || exit 0
+          git push
