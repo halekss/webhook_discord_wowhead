@@ -1,5 +1,1 @@
-Due to Delves and Open World content not expecting you to have a healer present, your incoming damage will be easier to handle and allow you to opt into more offensive talents by default. Although it still selects  Niuzao's Resolve by default, you can certainly play without it here, or even try out  Fluidity of Motion for an even faster rotation emphasizing single-target damage.
-
-
-
-
+https://www.wowhead.com/talent-calc/monk/brewmaster/master-of-harmony/EARAEVRVElEJEUUFQhJRCQEPVERUUUVUYFEUVFNEBFBQFFVVVUCAQ

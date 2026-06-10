@@ -8,21 +8,10 @@ from dotenv import load_dotenv
 load_dotenv()
 WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK")
 
-# Logique d'interception : on bloque tout ce qui n'est pas du texte/HTML
-async def route_intercept(route):
-    if route.request.resource_type in ["image", "stylesheet", "font", "media"]:
-        await route.abort()
-    else:
-        await route.continue_()
-
 async def check_delves_update():
     async with async_playwright() as p:
         browser = await p.chromium.launch()
-        context = await browser.new_context()
-        page = await context.new_page()
-        
-        # Application de l'intercepteur à toutes les requêtes réseau de la page
-        await page.route("**/*", route_intercept)
+        page = await browser.new_page()
 
         for item in CLASSES_SPECS:
             spec = item["spec"]
@@ -31,13 +20,16 @@ async def check_delves_update():
             print(f"Vérification de : {spec}...")
             
             try:
-                # On demande explicitement à s'arrêter au chargement du DOM (le squelette)
-                await page.goto(url, timeout=30000, wait_until="domcontentloaded")
+                # Chargement de la page
+                await page.goto(url, timeout=30000)
                 
-                h2_delve = page.locator("h2:has-text('Delve')")
+                # Ciblage de la section Delve avec les 3 variantes d'ID possibles
+                h2_delve = page.locator("#delve-talents, #delves, #delve-talent-builds").first
                 
                 if await h2_delve.count() > 0:
-                    content = await h2_delve.locator("xpath=following::div[@role='tabpanel'][1]").inner_text(timeout=5000)
+                    # Correction adaptative : on cherche le premier lien "Open in Calculator" suivant directement le H2
+                    button = h2_delve.locator("xpath=following::a").filter(has_text="Open in Calculator").first
+                    content = await button.get_attribute("href", timeout=5000)
                     
                     file_name = f"last_content_{spec.replace('/', '_')}.txt"
                     old_content = ""
@@ -46,6 +38,7 @@ async def check_delves_update():
                         with open(file_name, "r", encoding="utf-8") as f:
                             old_content = f.read()
                     
+                    # Comparaison de l'URL du build
                     if content != old_content:
                         print(f"Changement détecté pour {spec} !")
                         if WEBHOOK_URL:

@@ -1,7 +1,1 @@
-
- Colossus buffs the damage of  Cleave and bleeds, though Mortal Strike also continues to be used to maximize damage and cooldown reduction for Demolish. Execute is almost never used outside of Sudden Death, with this build trading out single target damage potential for more overall multitarget performance.
-The first two hits can be swept, but only the third hit of  Demolish is an actual AoE. Despite the description, it's actually a frontal cone with a surprisingly long distance, but very little backwards range, so be sure to position accordingly before using it.
- Rend now hits in an area, so  Thunder Clap is no longer required.
- Cut to the Bone is a buff triggered by any Mortal Strike critical hit, so it has a very high natural uptime.
-As of Patch 12.0.5, Slam becomes a better filler for triggering Deep Wounds, so  Cleave is no longer a necessary part of the single target rotation, with  Ravager better saved for multiple targets.
- Further Details 
+https://www.wowhead.com/talent-calc/warrior/arms/colossus/EAOARUUVFVVGZRqQQBENVVRVCZREWRUF0CFUFFVVVUBR

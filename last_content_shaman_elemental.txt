@@ -1,5 +1,1 @@
-The delve build is very basic. We pick up most of our utility CC talents in the class tree to more easily control mobs in case we need to kite away from some dangerous mobs.  Voltaic Blaze gives good cleave with  Purging Flames and tries to boost our otherwise lacking low target-count cleave.
-
-
-
-
+https://www.wowhead.com/talent-calc/shaman/elemental/farseer/EAQRRRVCZFVGFhERBEQCEAPVVVVUVBRARRVFHQDAEAFFVVVUBV

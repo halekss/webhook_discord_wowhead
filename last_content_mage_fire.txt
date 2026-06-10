@@ -1,5 +1,1 @@
- Meteor is core to Frostfire, and most always be picked.  Scorch is not recommended, since using it is a damage loss for Frostfire.
-
-
-
-
+https://www.wowhead.com/talent-calc/mage/fire/frostfire/EAOFaJVWERBRVFAVVCQAOVVVRRFURaFQVDQBUFVVVVUBA
