@@ -8,10 +8,21 @@ from dotenv import load_dotenv
 load_dotenv()
 WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK")
 
+# Logique d'interception : on bloque tout ce qui n'est pas du texte/HTML
+async def route_intercept(route):
+    if route.request.resource_type in ["image", "stylesheet", "font", "media"]:
+        await route.abort()
+    else:
+        await route.continue_()
+
 async def check_delves_update():
     async with async_playwright() as p:
         browser = await p.chromium.launch()
-        page = await browser.new_page()
+        context = await browser.new_context()
+        page = await context.new_page()
+        
+        # Application de l'intercepteur à toutes les requêtes réseau de la page
+        await page.route("**/*", route_intercept)
 
         for item in CLASSES_SPECS:
             spec = item["spec"]
@@ -20,6 +31,7 @@ async def check_delves_update():
             print(f"Vérification de : {spec}...")
             
             try:
+                # On demande explicitement à s'arrêter au chargement du DOM (le squelette)
                 await page.goto(url, timeout=30000, wait_until="domcontentloaded")
                 
                 h2_delve = page.locator("h2:has-text('Delve')")
@@ -46,7 +58,7 @@ async def check_delves_update():
                     
             except Exception as e:
                 print(f"Erreur sur {spec} : {e}")
-                continue # On passe à la classe suivante en cas de problème
+                continue 
         
         await browser.close()
 
