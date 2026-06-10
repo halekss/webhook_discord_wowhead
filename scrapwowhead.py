@@ -20,33 +20,33 @@ async def check_delves_update():
             print(f"Vérification de : {spec}...")
             
             try:
-                await page.goto(url, timeout=30000)
-                # On attend l'élément avec un timeout court
+                await page.goto(url, timeout=30000, wait_until="domcontentloaded")
+                
                 h2_delve = page.locator("h2:has-text('Delve')")
-
-                # On récupère le conteneur associé
-                # On utilise 'locator' pour naviguer dans le DOM
-                # Si le h2 est juste avant le div tabpanel, on peut tenter de le localiser dynamiquement
-                content = await h2_delve.locator("xpath=following::div[@role='tabpanel'][1]").inner_text()
                 
-                file_name = f"last_content_{spec.replace('/', '_')}.txt"
-                
-                old_content = ""
-                if os.path.exists(file_name):
-                    with open(file_name, "r", encoding="utf-8") as f:
-                        old_content = f.read()
-                
-                if content != old_content:
-                    print(f"Changement détecté pour {spec} !")
-                    if WEBHOOK_URL:
-                        requests.post(WEBHOOK_URL, json={"content": f"MàJ Delves détectée : {spec} -> {url}"})
+                if await h2_delve.count() > 0:
+                    content = await h2_delve.locator("xpath=following::div[@role='tabpanel'][1]").inner_text(timeout=5000)
                     
-                    with open(file_name, "w", encoding="utf-8") as f:
-                        f.write(content)
+                    file_name = f"last_content_{spec.replace('/', '_')}.txt"
+                    old_content = ""
+                    
+                    if os.path.exists(file_name):
+                        with open(file_name, "r", encoding="utf-8") as f:
+                            old_content = f.read()
+                    
+                    if content != old_content:
+                        print(f"Changement détecté pour {spec} !")
+                        if WEBHOOK_URL:
+                            requests.post(WEBHOOK_URL, json={"content": f"MàJ Delves détectée : {spec} -> {url}"})
                         
+                        with open(file_name, "w", encoding="utf-8") as f:
+                            f.write(content)
+                else:
+                    print(f"Aucune section Delve trouvée pour {spec}, on passe...")
+                    
             except Exception as e:
                 print(f"Erreur sur {spec} : {e}")
-                continue # Passe à la classe suivante même en cas d'erreur
+                continue # On passe à la classe suivante en cas de problème
         
         await browser.close()
 
