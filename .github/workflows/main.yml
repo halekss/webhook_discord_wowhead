@@ -2,7 +2,7 @@ name: WoW Delves Monitor
 
 on:
   schedule:
-    - cron: '30 11 * * *' # Tourne tous les jours à 10h
+    - cron: '12 9 * * *' 
   workflow_dispatch: # Permet de le lancer manuellement quand tu veux
 
 env:
