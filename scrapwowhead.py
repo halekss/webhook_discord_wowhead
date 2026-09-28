@@ -1,7 +1,7 @@
 import asyncio
 import os
 import requests
-from playwright.async_api import async_playwright
+from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeout
 from config import CLASSES_SPECS
 from dotenv import load_dotenv
 
@@ -29,15 +29,20 @@ async def check_delves_update():
             print(f"Vérification de : {spec}...")
             
             try:
-                # Chargement de la page
-                response = await page.goto(url, timeout=30000)
+                # Chargement de la page (sans attendre pubs/trackers, trop lents sur certaines pages)
+                response = await page.goto(url, timeout=30000, wait_until="domcontentloaded")
                 if not response.ok:
                     print(f"HTTP {response.status} sur {spec} (blocage ?), on passe...")
                     continue
                 
                 # Ciblage de la section Delve avec les 3 variantes d'ID possibles
                 h2_delve = page.locator("#delve-talents, #delves, #delve-talent-builds").first
-                
+                # Le guide est rendu en JS : on laisse jusqu'à 15 s à la section pour apparaître
+                try:
+                    await h2_delve.wait_for(state="attached", timeout=15000)
+                except PlaywrightTimeout:
+                    pass
+
                 if await h2_delve.count() > 0:
                     # Correction adaptative : on cherche le premier lien "Open in Calculator" suivant directement le H2
                     button = h2_delve.locator("xpath=following::a").filter(has_text="Open in Calculator").first
