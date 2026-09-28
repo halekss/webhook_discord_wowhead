@@ -10,8 +10,17 @@ WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK")
 
 async def check_delves_update():
     async with async_playwright() as p:
-        browser = await p.chromium.launch()
-        page = await browser.new_page()
+        # CloudFront renvoie 403 au Chromium headless par défaut : on imite un vrai Chrome
+        # (navigator.webdriver=false, user-agent, langue, fuseau, taille d'écran)
+        browser = await p.chromium.launch(args=["--disable-blink-features=AutomationControlled"])
+        context = await browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+            locale="fr-FR",
+            timezone_id="Europe/Paris",
+            viewport={"width": 1920, "height": 1080},
+            extra_http_headers={"Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8"},
+        )
+        page = await context.new_page()
 
         for item in CLASSES_SPECS:
             spec = item["spec"]
@@ -21,7 +30,10 @@ async def check_delves_update():
             
             try:
                 # Chargement de la page
-                await page.goto(url, timeout=30000)
+                response = await page.goto(url, timeout=30000)
+                if not response.ok:
+                    print(f"HTTP {response.status} sur {spec} (blocage ?), on passe...")
+                    continue
                 
                 # Ciblage de la section Delve avec les 3 variantes d'ID possibles
                 h2_delve = page.locator("#delve-talents, #delves, #delve-talent-builds").first
